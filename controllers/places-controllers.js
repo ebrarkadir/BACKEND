@@ -19,7 +19,7 @@ let DUMMY_PLACES = [
 ];
 
 const getPlaceById = (req, res, next) => {
-  const placeId = req.params.pid; // { pid: 'p1' }
+  const placeId = req.params.pid; 
 
   const place = DUMMY_PLACES.find(p => {
     return p.id === placeId;
@@ -29,11 +29,9 @@ const getPlaceById = (req, res, next) => {
     throw new HttpError('Could not find a place for the provided id.', 404);
   }
 
-  res.json({ place }); // => { place } => { place: place }
+  res.json({ place }); 
 };
 
-// function getPlaceById() { ... }
-// const getPlaceById = function() { ... }
 
 const getPlacesByUserId = (req, res, next) => {
   const userId = req.params.uid;
@@ -66,7 +64,7 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  // const title = req.body.title;
+
   const createdPlace = {
     id: uuidv4(),
     title,
@@ -76,7 +74,7 @@ const createPlace = async (req, res, next) => {
     creator
   };
 
-  DUMMY_PLACES.push(createdPlace); //unshift(createdPlace)
+  DUMMY_PLACES.push(createdPlace); 
 
   res.status(201).json({ place: createdPlace });
 };
