@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const getCoordsForAddress = require('../util/location');
+const Place = require('../models/place');
 
 let DUMMY_PLACES = [
   {
@@ -18,20 +19,29 @@ let DUMMY_PLACES = [
   }
 ];
 
-const getPlaceById = (req, res, next) => {
-  const placeId = req.params.pid; 
+const getPlaceById = async (req, res, next) => {
+  const placeId = req.params.pid; // { pid: 'p1' }
 
-  const place = DUMMY_PLACES.find(p => {
-    return p.id === placeId;
-  });
+  let place;
 
-  if (!place) {
-    throw new HttpError('Could not find a place for the provided id.', 404);
+  try {
+    place = await Place.findById(placeId);
+  }
+  catch (err) {
+    const error = new HttpError('Something went wrong, could not find a place.', 500);
+    return next(error);
   }
 
-  res.json({ place }); 
+  if (!place) {
+    const error = new HttpError('Could not find a place for the provided id.', 404);
+    return next(error);
+  }
+
+  res.json({ place: place.toObject({ getters: true }) }); // => { place } => { place: place }
 };
 
+// function getPlaceById() { ... }
+// const getPlaceById = function() { ... }
 
 const getPlacesByUserId = (req, res, next) => {
   const userId = req.params.uid;
@@ -52,7 +62,9 @@ const getPlacesByUserId = (req, res, next) => {
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    next(new HttpError('Invalid inputs passed, please check your data.', 422));
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
   }
 
   const { title, description, address, creator } = req.body;
@@ -64,17 +76,25 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-
-  const createdPlace = {
-    id: uuidv4(),
+  // const title = req.body.title;
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinates,
     address,
+    location: coordinates,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
     creator
-  };
+  });
 
-  DUMMY_PLACES.push(createdPlace); 
+  try {
+    await createdPlace.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Creating place failed, please try again.',
+      500
+    );
+    return next(error);
+  }
 
   res.status(201).json({ place: createdPlace });
 };
