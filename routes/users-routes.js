@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/", usersControllers.getUsers);
 
 router.post(
-  "/singup",
+  "/signup",
   [
     check("name").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
