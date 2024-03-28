@@ -7,9 +7,8 @@ const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
 
-
 const getPlaceById = async (req, res, next) => {
-  const placeId = req.params.pid; 
+  const placeId = req.params.pid;
 
   let place;
 
@@ -58,10 +57,11 @@ const getPlacesByUserId = async (req, res, next) => {
   }
 
   res.json({
-    places: userWithPlaces.places.map((place) => place.toObject({ getters: true })),
+    places: userWithPlaces.places.map((place) =>
+      place.toObject({ getters: true })
+    ),
   });
 };
-
 
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
@@ -80,14 +80,12 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
+    image: req.file.path,
     creator,
   });
 
@@ -110,7 +108,8 @@ const createPlace = async (req, res, next) => {
 
   console.log(user);
 
-  try {                 //????????
+  try {
+    //????????
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
@@ -181,10 +180,7 @@ const deletePlace = async (req, res, next) => {
   }
 
   if (!place) {
-    const error = new HttpError(
-      "Could not find place for this id.",
-      404
-    );
+    const error = new HttpError("Could not find place for this id.", 404);
     return next(error);
   }
 
