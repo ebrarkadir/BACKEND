@@ -5,7 +5,6 @@ const MIME_TYPE_MAP = {
     'image/png': 'png',
     'image/jpeg': 'jpeg',
     'image/jpg': 'jpg',
-
 };
 
 const fileUpload = multer({
@@ -16,13 +15,13 @@ const fileUpload = multer({
       },
       filename: (req, file, cb) => {
          const ext = MIME_TYPE_MAP[file.mimetype];
-         cd(null,uuidv1() + '.' + ext);
+         cb(null, uuidv1() + '.' + ext);
       }
    }), 
    fileFilter: (req, file, cb) => {
-    const isValid = !!MIME_TYPE_MAP[file.mimetype];
-    let error = isValid ? null : new Error('Invalid mime type!');
-    cb(error, isValid);
+      const isValid = !!MIME_TYPE_MAP[file.mimetype];
+      let error = isValid ? null : new Error('Invalid mime type!');
+      cb(error, isValid);
    }
 });
 
