@@ -3,7 +3,7 @@
         "DB_USER":"cetinebrarkadir",
         "DB_PASSWORD":"cetinebrarkadir",
         "DB_NAME":"mern",
-        "GOOGLE_API_KEY": "...",
+        "GOOGLE_API_KEY": "AIzaSyC_MHfe5ktmrIk2lo-gm3VMhBoH79nFnts",
         "JWT_KEY":"supersecret_dont_share"
     }
 }
